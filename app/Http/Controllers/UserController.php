@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
 use Illuminate\Http\Request;
 use App\Interfaces\UserInterface;
 use App\Http\Resources\UserResource;
@@ -15,11 +14,7 @@ class UserController extends Controller
     {
         $this->userInterface = $userInterface;
     }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
         $users = $this->userInterface->getAllUsers();
@@ -27,34 +22,13 @@ class UserController extends Controller
         return new UserResource(['data'=>$users]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'name',
-            'email',
-            'first_name',
-            'last_name',
-            'age',
-        ]);
-
         $user = $this->userInterface->createUser($request->all());
-        return new UserResource($user);
+        return response()->json([
+            'message' => 'Data created successfully',
+            'data' => new UserResource($user)
+        ], 201);
     }
 
     public function show($id)
@@ -65,22 +39,17 @@ class UserController extends Controller
 
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
-            'name' => 'required',
-            'email' => 'required',
-            'age' => 'required',
-        ]);
-
         $user = $this->userInterface->updateUser($id, $request->all());
+        $updatedUser = $this->userInterface->findUserById($id);
         return response()->json([
-            'message' => 'Update successfully :) '
+            'message' => 'Data update successfully!',
+            'data' => $updatedUser
         ], 200);
-
     }
 
     public function destroy($id)
     {
         $this->userInterface->deleteUser($id);
-        return response()->json(['message' => 'User deleted successfully']);
+        return response()->json(['message' => "User with ID no.{$id}, deleted successfully"]);
     }
 }
