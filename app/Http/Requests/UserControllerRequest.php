@@ -13,7 +13,7 @@ class UserControllerRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,8 +24,8 @@ class UserControllerRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required',
-            'email' => 'required',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
             'last_name' => 'nullable',
             'first_name' => 'nullable',
             'age' => 'numeric|nullable',
